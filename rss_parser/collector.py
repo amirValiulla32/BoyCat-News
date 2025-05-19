@@ -19,10 +19,30 @@ RSS_FEEDS = [
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Boycat NewsBot)"
 }
-def clean(summary: str) -> str:
-    text = fix_text(summary)                     # fixes mojibake
-    text = re.sub(r"\s+", " ", text).strip()     # normalise whitespace
-    return text
+bad_whitespace = re.compile(r"\s+")
+
+def tidy(text: str) -> str:
+    """
+    Strip HTML, fix mojibake, normalise whitespace, drop junk endings like [â€¦]
+    """
+    # 1. strip tags
+    txt = BeautifulSoup(text, "html.parser").get_text(" ", strip=True)
+
+    # 2. fix mojibake
+    txt = fix_text(txt, normalization='NFC')
+
+    # 3. remove [â€¦] or [...]
+    txt = re.sub(r"\[.*?\]$", "", txt)  # ← kill trailing [anything]
+    txt = re.sub(r"[.…]{3,}$", "", txt)  # ← kill trailing ..., ……
+
+    # 4. normalize spaces
+    txt = bad_whitespace.sub(" ", txt).strip()
+
+    #5. final clean
+    txt = txt.encode('ascii', 'ignore').decode('ascii')  # strip out broken characters like â
+
+
+    return txt
 
 def fetch_latest(limit: int = 20) -> List[Dict]:
     print(" fetch_latest() is running")
@@ -36,12 +56,11 @@ def fetch_latest(limit: int = 20) -> List[Dict]:
             print(f" Found {len(parsed.entries)} entries")
 
             for entry in parsed.entries:
-                raw_summary   = entry.get("summary", "")
-                stripped_html = BeautifulSoup(raw_summary, "html.parser").get_text(" ", strip=True)
-                clean_summary = clean(stripped_html)
+                clean_summary = tidy(entry.get("summary", ""))
+                clean_title = tidy(entry.get("title", ""))
 
                 article = {
-                    "title": entry.get("title", ""),
+                    "title": clean_title,
                     "url": entry.get("link", ""),
                     "published_at": entry.get("published", ""),
                     "source": parsed.feed.get("title", "unknown"),
