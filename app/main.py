@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 ##from mangum import Mangum
-from routes.news import router as news_router
+from parser.app.rss.news import router as news_router
 
 app = FastAPI()
 app.include_router(news_router)
