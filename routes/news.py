@@ -6,9 +6,15 @@ from fastapi.encoders import jsonable_encoder
 from rss_parser.collector import fetch_latest
 from rss_parser.filter import keyword_filter
 from fastapi.responses import Response
+from auth import verify_api_key
+from fastapi import Depends
+from fastapi.security import APIKeyHeader
 
 
-router = APIRouter(prefix="/news")
+router = APIRouter(
+    prefix="/news",
+    dependencies=[Depends(verify_api_key)]
+)
 
 @router.get("/")
 def get_news(
