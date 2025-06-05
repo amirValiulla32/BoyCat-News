@@ -19,6 +19,7 @@ def main():
     raw_articles = fetch_latest(limit=50, feed_urls=feed_urls)
     keywords = CAMPAIGN_KEYWORDS + BRAND_KEYWORDS
     filtered = keyword_filter(raw_articles, keywords, max_results=MAX_RESULTS)
+
     for article in filtered:
         print(f"{'title:':12} {article['title']}")
         print(f"{'url:':12} {article['url']}")
@@ -26,6 +27,12 @@ def main():
         print(f"{'source:':12} {article['source']}")
         print(f"{'summary:':12} {article['summary']}")
         print("-" * 50)
+
+for feed in get_feed_configs():
+    url = feed["url"]
+    articles = fetch_latest(limit=20, feed_urls=[url])
+    save_articles_to_supabase(articles, feed)
+
 
 
 if __name__ == "__main__":

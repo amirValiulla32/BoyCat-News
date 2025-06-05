@@ -1,16 +1,19 @@
 from app.rss.supabase_client import supabase
 
-def save_articles_to_supabase(articles: list):
-    if not articles:
-        print("No articles to insert.")
-        return
+def save_articles_to_supabase(articles, feed):
+    for article in articles:
+        record = {
+            "title": article["title"],
+            "url": article["url"],
+            "published_at": article["published_at"],
+            "source": article["source"],
+            "summary": article["summary"],
+            "campaign_id": feed["campaign_id"],
+            "brand_id": feed.get("brand_id"),  # optional
+            "feed_id": feed["id"],             # this avoids the NOT NULL error
+        }
 
-    try:
-        # Upsert into the table on unique key 'url'
-        response = supabase.table("campaigns_rss_items") \
-            .upsert(articles, on_conflict="url") \
-            .execute()
-
-        print(f"Inserted {len(response.data)} new articles.")
-    except Exception as e:
-        print("Error inserting articles into Supabase:", e)
+        try:
+            supabase.table("campaigns_rss_items").upsert(record).execute()
+        except Exception as e:
+            print(" Error inserting record:", e)
