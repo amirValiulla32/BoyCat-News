@@ -1,2 +1,3 @@
 clean/
 __pycache__/
+.env

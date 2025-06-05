@@ -45,8 +45,3 @@ def get_news(
         content=json.dumps(jsonable_encoder(response_data), indent=2),
         media_type="application/json"
     )
-@router.get("/debug")
-def debug_rss():
-    from parser.app.rss.collector import fetch_latest
-    articles = fetch_latest(limit=10)
-    return {"articles": articles}

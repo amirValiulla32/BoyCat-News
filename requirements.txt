@@ -4,3 +4,4 @@ feedparser
 ftfy
 Requests
 uvicorn
+supabase

@@ -7,7 +7,6 @@ import html
 from ftfy import fix_text   
 import re
 
-
 RSS_FEEDS = [
     "https://www.middleeastmonitor.com/feed",
     "https://mondoweiss.net/feed",
@@ -15,6 +14,7 @@ RSS_FEEDS = [
     "https://www.aljazeera.com/tag/palestine/rss",
     "https://theintercept.com/feed/?rss"
 ]
+
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Boycat NewsBot)"
@@ -43,17 +43,19 @@ def tidy(text: str) -> str:
 
 
     return txt
-
-def fetch_latest(limit: int = 20) -> List[Dict]:
-    print(" fetch_latest() is running")
+def fetch_latest(limit: int = 20, feed_urls: List[str] = None) -> List[Dict]:
+    print("fetch_latest() is running")
     articles: List[Dict] = []
 
-    for url in RSS_FEEDS:
-        print(f" Fetching from: {url}")
+    # fallback to global if none passed
+    urls = feed_urls if feed_urls else RSS_FEEDS
+
+    for url in urls:
+        print(f"Fetching from: {url}")
         try:
             response = requests.get(url, headers=HEADERS, timeout=10)
             parsed = feedparser.parse(response.content)
-            print(f" Found {len(parsed.entries)} entries")
+            print(f"Found {len(parsed.entries)} entries")
 
             for entry in parsed.entries:
                 clean_summary = tidy(entry.get("summary", ""))
@@ -75,3 +77,9 @@ def fetch_latest(limit: int = 20) -> List[Dict]:
 
     print(f" Total articles fetched: {len(articles)}")
     return articles[:limit]
+
+
+if __name__ == "__main__":
+    feeds = get_feed_configs()
+    print("Fetched Feeds:", feeds)
+    print(f"Total feeds fetched: {len(feeds)}")
