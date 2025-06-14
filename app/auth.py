@@ -8,6 +8,6 @@ API_KEY_NAME = "news-api"  # Name of the header to send the API key in
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 def verify_api_key(api_key: str = Security(api_key_header)):
-    print("🔥 SECURITY FILTER HIT 🔥  Received:", api_key)
+    print(" SECURITY FILTER HIT  Received:", api_key)
     if api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API Key")
