@@ -3,10 +3,10 @@ from typing import List
 import json
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from parser.app.rss.collector import fetch_latest
-from parser.app.rss.filter import keyword_filter
+from app.rss.collector import fetch_latest
+from app.rss.filter import keyword_filter
 from fastapi.responses import Response
-from parser.app.auth import verify_api_key
+from app.auth import verify_api_key
 from fastapi import Depends
 from fastapi.security import APIKeyHeader
 

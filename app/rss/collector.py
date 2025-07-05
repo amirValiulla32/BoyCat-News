@@ -43,7 +43,7 @@ def tidy(text: str) -> str:
 
 
     return txt
-def fetch_latest(limit: int = 20, feed_urls: List[str] = None) -> List[Dict]:
+def fetch_latest(limit: int = 200, feed_urls: List[str] = None) -> List[Dict]:
     articles: List[Dict] = []
 
     # fallback to global if none passed
